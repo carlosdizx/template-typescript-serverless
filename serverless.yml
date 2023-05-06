@@ -3,6 +3,11 @@ service: crud-serverless
 provider:
   name: aws
   runtime: nodejs16.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rds-db:connect
+      Resource: arn:aws:rds:us-east-1:184440761998:db:pop-dev-instance-1:*
 
 plugins:
   - serverless-esbuild
