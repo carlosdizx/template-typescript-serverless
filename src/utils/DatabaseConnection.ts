@@ -13,7 +13,7 @@ const dataSource =  new DataSource({
 
 const getConnect = async () => {
     if(!dataSource.isInitialized) {
-        console.log("Connected to database");
+        console.log("Trying to connect to the database");
         await  dataSource.initialize();
     }else console.log("recycled connection");
 

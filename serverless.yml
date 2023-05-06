@@ -3,6 +3,7 @@ service: crud-serverless
 provider:
   name: aws
   runtime: nodejs16.x
+  timeout: 900
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -18,6 +19,10 @@ custom:
     minify: true
     external:
       - aws-sdk
+      - dotenv
+      - pg
+      - reflect-metadata
+      - typeorm
     watch:
       pattern: [ './index.ts', 'src/**/*.ts' ]
       ignore: [ '.serverless/**/*', '.build' ]
