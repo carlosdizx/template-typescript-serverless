@@ -3,12 +3,6 @@ service: crud-serverless
 provider:
   name: aws
   runtime: nodejs16.x
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action: "dynamodb:*"
-          Resource: arn:aws:dynamodb:us-east-1:184440761998:table/users
 
 plugins:
   - serverless-esbuild
@@ -22,22 +16,6 @@ custom:
     watch:
       pattern: [ './index.ts', 'src/**/*.ts' ]
       ignore: [ '.serverless/**/*', '.build' ]
-
-resources:
-  Resources:
-    usersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: users
-        AttributeDefinitions:
-          - AttributeName: pk
-            AttributeType: S
-        KeySchema:
-          - AttributeName: pk
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
 
 functions:
   find-user:
