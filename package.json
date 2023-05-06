@@ -14,7 +14,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "aws-sdk": "^2.1373.0"
+    "aws-sdk": "^2.1373.0",
+    "dotenv": "^16.0.3",
+    "pg": "^8.10.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.15"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.114",
