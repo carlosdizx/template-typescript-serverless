@@ -21,6 +21,36 @@ custom:
     watch:
       pattern: [ './index.ts', 'src/**/*.ts' ]
       ignore: [ '.serverless/**/*', '.build' ]
+  env: ${file(./properties/properties.yaml)}
 
 functions:
   - ${file(./src/functions/users/index.functions.yml)}
+
+#resources:
+#  Resources:
+#    AuroraSecurityGroup:
+#      Type: AWS::EC2::SecurityGroup
+#      Properties:
+#        GroupDescription: Security group for Aurora Serverless
+#        VpcId: vpc-00a1df5516f79d1ce
+#        SecurityGroupIngress:
+#          - IpProtocol: tcp
+#            FromPort: 3306
+#            ToPort: 3306
+#            CidrIp: 10.0.0.0/16
+#    AuroraDBCluster:
+#      Type: AWS::RDS::DBCluster
+#      Properties:
+#        Engine: aurora
+#        EngineMode: serverless
+#        DatabaseName: pop-dev
+#        MasterUsername: postgres
+#        MasterUserPassword: aCATEakWAY98*
+#        ScalingConfiguration:
+#          AutoPause: true
+#          MaxCapacity: 2
+#          MinCapacity: 1
+#          SecondsUntilAutoPause: 300
+#        VpcSecurityGroupIds:
+#          - !Ref AuroraSecurityGroup
+#        DeletionProtection: false

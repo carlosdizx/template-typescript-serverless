@@ -1,0 +1,7 @@
+ENV:
+  DB:
+    DB_HOST: pop-dev-instance-1.cwvgfyw0cztu.us-east-1.rds.amazonaws.com
+    DB_PORT: 5432
+    DB_NAME: pop-dev
+    DB_USER: postgres
+    DB_PASS: aCATEakWAY98*
