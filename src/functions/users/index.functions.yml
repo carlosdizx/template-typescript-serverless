@@ -1,0 +1,24 @@
+find-user:
+  handler: ${self:custom.prefix_module, 'src/functions/users/'}find.handler
+  events:
+    - http:
+        path: users/{id}
+        method: GET
+create-user:
+  handler: ${self:custom.prefix_module, 'src/functions/users/'}create.handler
+  events:
+    - http:
+        path: users
+        method: POST
+update-user:
+  handler: ${self:custom.prefix_module, 'src/functions/users/'}update.handler
+  events:
+    - http:
+        path: users/{id}
+        method: PATCH
+delete-user:
+  handler: ${self:custom.prefix_module, 'src/functions/users/'}delete.handler
+  events:
+    - http:
+        path: users/{id}
+        method: DELETE

@@ -18,27 +18,4 @@ custom:
       ignore: [ '.serverless/**/*', '.build' ]
 
 functions:
-  find-user:
-    handler: src/functions/users/find.handler
-    events:
-      - http:
-          path: users/{id}
-          method: GET
-  create-user:
-    handler: src/functions/users/create.handler
-    events:
-      - http:
-          path: users
-          method: POST
-  update-user:
-    handler: src/functions/users/update.handler
-    events:
-      - http:
-          path: users/{id}
-          method: PATCH
-  delete-user:
-    handler: src/functions/users/delete.handler
-    events:
-      - http:
-          path: users/{id}
-          method: DELETE
+  - ${file(./src/functions/users/index.functions.yml)}
