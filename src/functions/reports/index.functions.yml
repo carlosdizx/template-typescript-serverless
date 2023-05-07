@@ -2,5 +2,11 @@ find-all-records:
   handler: ${self:custom.prefix_module, 'src/functions/reports/'}find-all-records.handler
   events:
     - http:
-        path: reports/findAllRecords
+        path: reports/records
         method: GET
+download-find-all-records:
+  handler: ${self:custom.prefix_module, 'src/functions/reports/'}download-find-all-records.handler
+  events:
+    - http:
+        path: reports/records
+        method: POST

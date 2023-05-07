@@ -65,4 +65,31 @@ export default class ReportRecordsService {
             prev,
         });
     }
+    public static downloadFindAllRecords = async (data: any) => {
+        console.time('Query');
+        const [field, value] = data.search ? data.search.split('|') : [null, null];
+        const query = `SELECT * FROM sp_findalldownloadrecords(
+          ${null},
+          ${null},
+          '${data.from && data.from}',
+          '${data.to && data.to}',
+          ${data.idCity ? data.idCity : null},
+          ${data.state ? data.state : null},
+          ${data.idRecord ? data.idRecord : null},
+          ${data.idUser ? data.idUser : null},
+          ${data.idObservation ? data.idObservation : null},
+          ${data.idClient ? data.idClient : null},
+          ${data.idOperator ? data.idOperator : null},
+          ${null},
+          ${null},
+          '${field}',
+          '${value}',
+          ${data.highPriority ? data.highPriority : false}
+        ) LIMIT 250000`;
+        const datasource = await getConnect();
+
+        const result = await datasource.manager.query(query);
+        console.timeEnd('Query');
+        return responseObject(200, result);
+    }
 }
