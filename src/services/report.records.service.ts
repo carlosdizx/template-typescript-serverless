@@ -3,9 +3,13 @@ import getConnect from "../utils/DatabaseConnection";
 
 export default class ReportRecordsService {
     public static findAllRecords = async (data: any) => {
-        const {
+        let {
             offset,
             page,
+        } = data;
+        page = page == '' ? 1 : Number(page);
+        offset = offset == '' ? 10 : Number(offset);
+        const {
             from,
             to,
             idCity,
