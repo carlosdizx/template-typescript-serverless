@@ -7,5 +7,5 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const body: any = JSON.parse(event.body);
     return await UserService.create(body);
   }
-  return responseObject(201, {message: "Body is required"});
+  return responseObject(400, {message: "Body is required"});
 };

@@ -1,0 +1,6 @@
+find-all-records:
+  handler: ${self:custom.prefix_module, 'src/functions/reports/'}find-all-records.handler
+  events:
+    - http:
+        path: reports/findAllRecords
+        method: POST
