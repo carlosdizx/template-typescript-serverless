@@ -16,6 +16,7 @@ const getConnect = async () => {
         console.log("Trying to connect to the database");
         await  dataSource.initialize();
     }else console.log("recycled connection");
+    console.log("Successfully connected!");
     return dataSource;
 }
 

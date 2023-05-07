@@ -29,7 +29,6 @@ custom:
   env: ${file(./properties/properties.yaml)}
 
 functions:
-  - ${file(./src/functions/users/index.functions.yml)}
   - ${file(./src/functions/reports/index.functions.yml)}
 
 #resources:
