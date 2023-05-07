@@ -1,5 +1,6 @@
 import responseObject from "../utils/Response";
 import getConnect from "../utils/DatabaseConnection";
+const xlsxPopulate = require('xlsx-populate');
 
 export default class ReportRecordsService {
     public static findAllRecords = async (data: any) => {
@@ -90,6 +91,31 @@ export default class ReportRecordsService {
 
         const result = await datasource.manager.query(query);
         console.timeEnd('Query');
-        return responseObject(200, result);
+
+        const workbook = await xlsxPopulate.fromBlankAsync();
+        const sheet = workbook.sheet(0);
+
+        const headers = Object.keys(result[0]);
+        for (let i = 0; i < headers.length; i++) {
+            sheet.cell(1, i + 1).value(headers[i]);
+        }
+
+        for (let i = 0; i < result.length; i++) {
+            const row = Object.values(result[i]);
+            for (let j = 0; j < row.length; j++) {
+                sheet.cell(i + 2, j + 1).value(row[j]);
+            }
+        }
+
+        const buffer = await workbook.outputAsync();
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': `attachment; filename="archivo.xlsx"`,
+            },
+            body: buffer.toString('base64'),
+            isBase64Encoded: true,
+        };
     }
 }

@@ -18,12 +18,15 @@
     "dotenv": "^16.0.3",
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.15"
+    "stream-buffers": "^3.0.2",
+    "typeorm": "^0.3.15",
+    "xlsx-populate": "^1.21.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.114",
     "@types/aws-sdk": "^2.7.0",
     "@types/node": "^16.18.25",
+    "@types/stream-buffers": "^3.0.4",
     "esbuild": "^0.17.18",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.0",
