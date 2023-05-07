@@ -1,12 +1,10 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import responseObject from "../../utils/Response";
-import ReportService from "../../services/report.service";
+import ReportRecordsService from "../../services/report.records.service";
 export const handler: APIGatewayProxyHandler = async (event, context) => {
     console.log(`HANDLER: Starting ${context.functionName}...`);
-    if (typeof event.body === 'string') {
-        const body: any = JSON.parse(event.body);
-        console.log(`HANDLER: Ending ${context.functionName}...`);
-        return ReportService.findAllRecords(body);
+    if (event.queryStringParameters) {
+        return ReportRecordsService.findAllRecords(event.queryStringParameters);
     }
-    return responseObject(400, {message: "Body is required"});
+    return responseObject(400, {message: "Query parameters are required"});
 };

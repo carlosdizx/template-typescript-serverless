@@ -3,4 +3,4 @@ find-all-records:
   events:
     - http:
         path: reports/findAllRecords
-        method: POST
+        method: GET

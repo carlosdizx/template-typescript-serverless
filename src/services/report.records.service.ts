@@ -1,7 +1,7 @@
 import responseObject from "../utils/Response";
 import getConnect from "../utils/DatabaseConnection";
 
-export default class ReportService {
+export default class ReportRecordsService {
     public static findAllRecords = async (data: any) => {
         const {
             offset,
