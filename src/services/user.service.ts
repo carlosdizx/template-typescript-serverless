@@ -1,9 +1,7 @@
 import responseObject from "../utils/Response";
-import getConnect from "../utils/DatabaseConnection";
 
 export default class UserService {
     public static create = async (data: any) => {
-        await getConnect();
         return responseObject(201, data);
     }
 

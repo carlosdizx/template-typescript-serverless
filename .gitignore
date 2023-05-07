@@ -6,6 +6,8 @@ package-lock.json
 ./.idea
 .build/*
 .build
+.esbuild
+.esbuild/**
 .dynamodb
 .dynamodb/*
 .env
