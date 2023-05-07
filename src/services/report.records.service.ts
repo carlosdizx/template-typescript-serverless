@@ -67,6 +67,24 @@ export default class ReportRecordsService {
         });
     }
     public static downloadFindAllRecords = async (data: any) => {
+        const result = await ReportRecordsService.getRecordsForFDownload(data);
+
+        const workbook = await ReportRecordsService.setDataInFile(result);
+
+        const buffer = await workbook.outputAsync({base64: true});
+        console.timeEnd('Append file');
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': `attachment; filename="archivo.xlsx"`,
+            },
+            body: buffer.toString('base64'),
+            isBase64Encoded: true,
+        };
+    }
+
+    private static getRecordsForFDownload = async (data: any) => {
         console.time('Query');
         const [field, value] = data.search ? data.search.split('|') : [null, null];
         const query = `SELECT * FROM sp_findalldownloadrecords(
@@ -90,9 +108,13 @@ export default class ReportRecordsService {
         const datasource = await getConnect();
 
         const result = await datasource.manager.query(query);
-        console.timeLog('Query',`Count: ${result.length}` );
+        console.log(`Count: ${result.length}` );
         console.timeEnd('Query');
+        return result;
+    }
 
+    private static setDataInFile = async (result: any[]) => {
+        console.time("setDataInFile");
         const workbook = await xlsxPopulate.fromBlankAsync();
         const sheet = workbook.sheet(0);
         sheet.cell('A1').value('Id direccion');
@@ -202,84 +224,7 @@ export default class ReportRecordsService {
             cellAG.value(result[i].senderEmail );
             cellAH.value(result[i].senderPhone );
         }
-
-        const buffer = await workbook.outputAsync({base64: true});
-        console.timeEnd('Append file');
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition': `attachment; filename="archivo.xlsx"`,
-            },
-            body: buffer.toString('base64'),
-            isBase64Encoded: true,
-        };
-
-        // console.time('Mapping data');
-        // const resultMap = result.map((res: any) => ({
-        //     'Id direccion': res.idAddress,
-        //     'Fecha de Creacion': res.createdDate,
-        //     'Hora de Creacion': res.createdHour,
-        //     Ciudad: res.city,
-        //     Cliente: res.client,
-        //     Operador: res.operator,
-        //     Guia: res.trackingId,
-        //     Estado: res.state,
-        //     'Direccion de Destinatario': res.address,
-        //     'Telefono de Destinatario': res.reference1,
-        //     Observaciones: res.reference2,
-        //     'Valor declarado': res.declaredValue,
-        //     'Guia Cliente': res.clientTrackingId,
-        //     Zona: res.zone,
-        //     'Nombre de Destinatario': res.name,
-        //     'Novedad de entrega': res.routeObservation,
-        //     'Nota de entrega': res.record,
-        //     'Comentario de direccion': res.comment,
-        //     'Comentario de novedad/nota': res.detailObservation,
-        //     'Intento de entrega': res.attempt,
-        //     'Dias de retraso': res.delay,
-        //     'ID externo': res.externalId,
-        //     'Fecha de la orden': res.orderDate,
-        //     'Fecha del estado': res.stateDate,
-        //     'Hora del estado': res.stateHour,
-        //     Producto: res.product,
-        //     Cantidad: res.quantity,
-        //     'Valor del recaudo': res.ammount,
-        //     'Mensajero asignado': res.courier,
-        //     'Tipo de cierre': res.finishedType,
-        //     'Observacion de cierre': res.finishedDescription,
-        //     'Fecha de entrega': res.deliveryDate,
-        //     'Correo remitente': res.senderEmail,
-        //     'Telefono remitente': res.senderPhone,
-        // }));
-        // console.timeEnd('Mapping data');
-        //
-        // console.time('Append file');
-        // const workbook = await xlsxPopulate.fromBlankAsync();
-        // const sheet = workbook.sheet(0);
-        //
-        // const headers = Object.keys(resultMap[0]);
-        // for (let i = 0; i < headers.length; i++) {
-        //     sheet.cell(1, i + 1).value(headers[i]);
-        // }
-        //
-        // for (let i = 0; i < resultMap.length; i++) {
-        //     const row = Object.values(resultMap[i]);
-        //     for (let j = 0; j < row.length; j++) {
-        //         sheet.cell(i + 2, j + 1).value(row[j]);
-        //     }
-        // }
-        //
-        // const buffer = await workbook.outputAsync({base64: true});
-        // console.timeEnd('Append file');
-        // return {
-        //     statusCode: 200,
-        //     headers: {
-        //         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        //         'Content-Disposition': `attachment; filename="archivo.xlsx"`,
-        //     },
-        //     body: buffer.toString('base64'),
-        //     isBase64Encoded: true,
-        // };
+        console.timeEnd("setDataInFile");
+        return workbook;
     }
 }
