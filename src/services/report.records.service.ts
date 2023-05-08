@@ -69,7 +69,7 @@ export default class ReportRecordsService {
     public static downloadFindAllRecords = async (data: any) => {
         const result = await ReportRecordsService.getRecordsForFDownload(data);
 
-        const workbook = await ReportRecordsService.setDataInFile(result);
+        const workbook = await ReportRecordsService.setHeadersInFile(result);
 
         const buffer = await workbook.outputAsync({base64: true});
         console.timeEnd('Append file');
@@ -104,7 +104,7 @@ export default class ReportRecordsService {
           '${field}',
           '${value}',
           ${data.highPriority ? data.highPriority : false}
-        ) LIMIT 250000`;
+        ) LIMIT 500000`;
         const datasource = await getConnect();
 
         const result = await datasource.manager.query(query);
@@ -113,8 +113,8 @@ export default class ReportRecordsService {
         return result;
     }
 
-    private static setDataInFile = async (result: any[]) => {
-        console.time("setDataInFile");
+    private static setHeadersInFile = async (result: any[]) => {
+        console.time("setHeadersInFile");
         const workbook = await xlsxPopulate.fromBlankAsync();
         const sheet = workbook.sheet(0);
         sheet.cell('A1').value('Id direccion');
@@ -151,7 +151,13 @@ export default class ReportRecordsService {
         sheet.cell('AF1').value('Fecha de entrega');
         sheet.cell('AG1').value('Correo remitente');
         sheet.cell('AH1').value('Telefono remitente');
+        console.timeEnd("setHeadersInFile");
 
+        await ReportRecordsService.setDataInFile(result, sheet);
+        return workbook;
+    }
+    private static setDataInFile = async (result: any[], sheet: any) => {
+        console.time("setDataInFile");
         for (let i = 0; i < result.length; i++) {
             const row = i + 2;
             const cellA = sheet.cell(`A${row}`);
@@ -225,6 +231,6 @@ export default class ReportRecordsService {
             cellAH.value(result[i].senderPhone );
         }
         console.timeEnd("setDataInFile");
-        return workbook;
+        return sheet;
     }
 }
