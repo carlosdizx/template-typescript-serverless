@@ -1,5 +1,8 @@
 import responseObject from "../utils/Response";
 import getConnect from "../utils/DatabaseConnection";
+import {upload} from "../utils/S3Config";
+import XLSX from "XLSX";
+import {rejects} from "assert";
 
 const xlsxPopulate = require('xlsx-populate');
 
@@ -73,19 +76,21 @@ export default class ReportRecordsService {
         const mapResult = ReportRecordsService.mappingData(result);
         console.timeEnd('Mapping data');
 
-        const workbook = await ReportRecordsService.setDataInFile(mapResult);
+        const pageSize = 100000;
+        const buffer = await ReportRecordsService.setDataInFile(mapResult, pageSize);
+
+        const params = {
+            Key: `archivo-${new Date().getMinutes()}.xlsx`,
+            Body: buffer,
+            ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        };
+        const resultUpload = await upload(params);
 
         console.time('Buffer file');
-        const buffer = await workbook.outputAsync({base64: true});
         console.timeEnd('Buffer file');
         return {
             statusCode: 200,
-            headers: {
-                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition': `attachment; filename="archivo.xlsx"`,
-            },
-            body: buffer.toString('base64'),
-            isBase64Encoded: true,
+            body: JSON.stringify(resultUpload)
         };
     }
 
@@ -120,7 +125,7 @@ export default class ReportRecordsService {
 
     private static mappingData = (result: any[]) => {
         console.time('Mapping data');
-        return result.map((res: any) => ({
+        return [...result.map((res: any) => ({
             'Id direccion': res.idAddress,
             'Fecha de Creacion': res.createdDate,
             'Hora de Creacion': res.createdHour,
@@ -155,28 +160,34 @@ export default class ReportRecordsService {
             'Fecha de entrega': res.deliveryDate,
             'Correo remitente': res.senderEmail,
             'Telefono remitente': res.senderPhone,
-        }));
+        }))];
     }
 
-    private static setDataInFile = async (result: any[]) => {
+    private static async setDataInFile(result: any[], pageSize: number) {
         console.time("setDataInFile");
 
-        const workbook = await xlsxPopulate.fromBlankAsync();
-        const sheet = workbook.sheet(0);
+        const totalRecords = result.length;
+        const totalPages = Math.ceil(totalRecords / pageSize);
 
-        const headers = Object.keys(result[0]);
-        for (let i = 0; i < headers.length; i++) {
-            sheet.cell(1, i + 1).value(headers[i]);
+        const workbook = XLSX.utils.book_new();
+
+        for (let batch = 1; batch <= totalPages; batch++) {
+            const start = (batch - 1) * pageSize;
+            const end = Math.min(start + pageSize, totalRecords);
+
+            const currentBatch = result.slice(start, end);
+            const worksheet = XLSX.utils.json_to_sheet(currentBatch);
+
+            await XLSX.utils.book_append_sheet(workbook, worksheet, `recordsReport-${batch}`);
         }
 
-        for (let i = 0; i < result.length; i++) {
-            const row = Object.values(result[i]);
-            for (let j = 0; j < row.length; j++) {
-                sheet.cell(i + 2, j + 1).value(row[j]);
-            }
-        }
+        const buffer = await XLSX.write(workbook, {
+            type: 'buffer',
+            bookType: 'xlsx',
+            bookSST: false,
+        });
 
         console.timeEnd("setDataInFile");
-        return workbook;
+        return buffer;
     }
 }
