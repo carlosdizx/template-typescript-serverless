@@ -71,27 +71,32 @@ export default class ReportRecordsService {
         });
     }
     public static downloadFindAllRecords = async (data: any) => {
-        const result = await ReportRecordsService.getRecordsForFDownload(data);
+        try {
+            const result = await ReportRecordsService.getRecordsForFDownload(data);
 
-        const mapResult = ReportRecordsService.mappingData(result);
-        console.timeEnd('Mapping data');
+            const mapResult = ReportRecordsService.mappingData(result);
+            console.timeEnd('Mapping data');
 
-        const pageSize = 100000;
-        const buffer = await ReportRecordsService.setDataInFile(mapResult, pageSize);
+            const pageSize = 100000;
+            const buffer = await ReportRecordsService.setDataInFile(mapResult, pageSize);
 
-        const params = {
-            Key: `archivo-${new Date().getMinutes()}.xlsx`,
-            Body: buffer,
-            ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        };
-        const resultUpload = await upload(params);
+            const params = {
+                Key: `archivo-${new Date().getMinutes()}.xlsx`,
+                Body: buffer,
+                ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            };
 
-        console.time('Buffer file');
-        console.timeEnd('Buffer file');
-        return {
-            statusCode: 200,
-            body: JSON.stringify(resultUpload)
-        };
+            const resultUpload = await upload(params);
+            console.timeEnd("Upload File");
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify(resultUpload)
+            };
+        }
+        catch (err) {
+            return responseObject(500, {message: err})
+        }
     }
 
     private static getRecordsForFDownload = async (data: any) => {
