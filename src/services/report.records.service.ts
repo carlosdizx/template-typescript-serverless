@@ -2,7 +2,7 @@ import responseObject from "../utils/Response";
 import getConnect from "../utils/DatabaseConnection";
 import {upload} from "../utils/S3Config";
 import XLSX from "XLSX";
-import {rejects} from "assert";
+import moment from 'moment-timezone';
 
 const xlsxPopulate = require('xlsx-populate');
 
@@ -81,7 +81,7 @@ export default class ReportRecordsService {
             const buffer = await ReportRecordsService.setDataInFile(mapResult, pageSize);
 
             const params = {
-                Key: `archivo-${new Date().getMinutes()}.xlsx`,
+                Key: `report-${moment().tz('America/Bogota').format('YYYY-MM-DD HH.mm.ss')}.xlsx`,
                 Body: buffer,
                 ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             };

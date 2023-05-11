@@ -23,6 +23,8 @@ custom:
       - pg
       - reflect-metadata
       - typeorm
+      - moment
+      - moment-timezone
     watch:
       pattern: [ './index.ts', 'src/**/*.ts' ]
       ignore: [ '.serverless/**/*', '.build' ]
